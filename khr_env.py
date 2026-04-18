@@ -93,7 +93,7 @@ class KHREnv:
         self.actions_dof_idx = torch.argsort(self.motors_dof_idx)
 
         #ロータイナーシャの設定 set armature:  default = 0.1 kgm^2
-        #self.robot.set_dofs_armature(0.01)
+        self.robot.set_dofs_armature(self.env_cfg["armature"])
 
         # PD control parameters
         self.kp = self.env_cfg["kp"]

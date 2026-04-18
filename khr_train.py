@@ -101,6 +101,9 @@ def get_cfgs():
         # PD
         "kp": 25.0,
         "kd": 0.5,
+ 
+        "armature": 0.01,   # [kgm^2]  default 0.1
+        
         # termination
         "termination_if_roll_greater_than": 50,  # degree
         "termination_if_pitch_greater_than": 50,
@@ -194,7 +197,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="khr-walking")
     parser.add_argument("-B", "--num_envs", type=int, default=4096)
-    parser.add_argument("--max_iterations", type=int, default=101)
+    parser.add_argument("-I","--max_iterations", type=int, default=101)
     parser.add_argument("--seed", type=int, default=1)
     args = parser.parse_args()
 
