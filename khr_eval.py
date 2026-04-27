@@ -20,7 +20,7 @@ from khr_env import KHREnv
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="khr-walking")
-    parser.add_argument("--ckpt", type=int, default=100)
+    parser.add_argument("--ckpt", "-I", type=int, default=100)
     args = parser.parse_args()
 
     gs.init(backend=gs.cpu)
