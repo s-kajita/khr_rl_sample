@@ -106,7 +106,7 @@ jnt_names = [
 ]
 dofs_idx = [robot.get_joint(name).dofs_idx_local[0] for name in jnt_names]
 
-############ オプション：制御ゲインの設定 ############
+############ 制御ゲインの設定 ############
 # 位置ゲインの設定
 robot.set_dofs_kp(
     kp             = env_cfg["kp"],
