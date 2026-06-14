@@ -17,7 +17,7 @@ import genesis as gs
 from go2_env import Go2Env
 
 
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="go2-walk")
     parser.add_argument("-I", "--ckpt", type=int, default=100)
@@ -48,7 +48,3 @@ def main():
         while True:
             actions = policy(obs_dict)
             obs_dict, rews, dones, infos = env.step(actions)
-
-
-if __name__ == "__main__":
-    main()

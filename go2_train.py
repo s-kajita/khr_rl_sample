@@ -123,7 +123,7 @@ def get_cfgs():
     }
     reward_cfg = {
         "tracking_sigma": 0.25,
-        "base_height_target": 0.3,
+        "base_height_target": 0.254,  # for go2 0.3
         "feet_height_target": 0.075,
         "reward_scales": {
             "tracking_lin_vel": 1.0,
@@ -177,7 +177,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-"""
-# training
-python examples/locomotion/go2_train.py
-"""

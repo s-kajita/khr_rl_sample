@@ -232,8 +232,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-# training
-python examples/locomotion/go2_train.py
-"""

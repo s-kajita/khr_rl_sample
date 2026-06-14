@@ -39,7 +39,7 @@ class Go2Env:
                 substeps=2,
             ),
             rigid_options=gs.options.RigidOptions(
-                enable_self_collision=False,
+                enable_self_collision=True,   # originally  False
                 tolerance=1e-5,
                 # For this locomotion policy, there are usually no more than 20 collision pairs. Setting a low value
                 # can save memory. Violating this condition will raise an exception.
