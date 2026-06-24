@@ -100,8 +100,8 @@ class KHREnv:
         # PD control parameters
         self.kp = self.env_cfg["kp"]
         self.kd = self.env_cfg["kd"]
-        self.robot.set_dofs_kp(self.kp * self.num_actions, self.motors_dof_idx)
-        self.robot.set_dofs_kv(self.kd * self.num_actions, self.motors_dof_idx)
+        self.robot.set_dofs_kp([self.kp] * self.num_actions, self.motors_dof_idx)
+        self.robot.set_dofs_kv([self.kd] * self.num_actions, self.motors_dof_idx)
 
         # Define global gravity direction vector
         self.global_gravity = torch.tensor([0.0, 0.0, -1.0], dtype=gs.tc_float, device=gs.device)

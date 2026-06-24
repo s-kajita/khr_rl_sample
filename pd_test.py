@@ -22,8 +22,10 @@ def get_cfgs():
     env_cfg = {
         "num_actions": 12, #強化学習する関節の数
        # PD
-        "kp": np.array([25]*12),
-        "kd": np.array([0.5]*12),
+        #"kp": np.array([25]*12),
+        #"kd": np.array([0.5]*12),
+        "kp": 25.0,
+        "kd": 0.5,
         #"armature": np.array([0.149,0.401,0.434,0.536,0.226,0.070]*2),
         # termination
         "termination_if_roll_greater_than": 15,  # degree
@@ -109,12 +111,12 @@ dofs_idx = [robot.get_joint(name).dofs_idx_local[0] for name in jnt_names]
 ############ 制御ゲインの設定 ############
 # 位置ゲインの設定
 robot.set_dofs_kp(
-    kp             = env_cfg["kp"],
+    kp             = [env_cfg["kp"]]*env_cfg["num_actions"],
     dofs_idx_local = dofs_idx,
 )
 # 速度ゲインの設定
 robot.set_dofs_kv(
-    kv             = env_cfg["kd"],
+    kv             = [env_cfg["kd"]]*env_cfg["num_actions"],
     dofs_idx_local = dofs_idx,
 )
 '''
