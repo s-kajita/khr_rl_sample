@@ -109,7 +109,7 @@ def get_cfgs():
         "termination_if_pitch_greater_than": 50,
         "termination_if_ankle_distance_smaller_than":0.085,
         # base pose
-        "base_init_pos": [0.0, 0.0, 0.28],
+        "base_init_pos": [0.0, 0.0, 0.24],
         "base_init_quat": [1.0, 0.0, 0.0, 0.0],
         "episode_length_s": 20.0,
         "resampling_time_s": 4.0,

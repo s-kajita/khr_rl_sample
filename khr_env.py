@@ -278,7 +278,7 @@ class KHREnv:
         self.reset_buf |= torch.abs(self.base_euler[:, 1]) > self.env_cfg["termination_if_pitch_greater_than"]
         self.reset_buf |= torch.abs(self.base_euler[:, 0]) > self.env_cfg["termination_if_roll_greater_than"]
         self.reset_buf |= self.scene.rigid_solver.get_error_envs_mask()
-        self.reset_buf |= ankle_dist < self.env_cfg["termination_if_ankle_distance_smaller_than"]
+        #self.reset_buf |= ankle_dist < self.env_cfg["termination_if_ankle_distance_smaller_than"]
 
 
         # Compute timeout
