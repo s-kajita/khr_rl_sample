@@ -13,7 +13,7 @@ from rsl_rl.runners import OnPolicyRunner
 
 import genesis as gs
 
-from khr_env import KHREnv
+from dbg_env import KHREnv
 
 
 def get_train_cfg(exp_name):
@@ -185,9 +185,9 @@ def get_cfgs():
     }
     command_cfg = {
         "num_commands": 3,
-        "lin_vel_x_range": [-0.2, 0.2],
-        "lin_vel_y_range": [-0.2, 0.2],
-        "ang_vel_range": [-0.5, 0.5],
+        "lin_vel_x_range": [0.5, 0.5],  #[-0.2, 0.2],
+        "lin_vel_y_range": [0, 0],  #[-0.2, 0.2],
+        "ang_vel_range":   [0, 0],  #[-0.5, 0.5],
     }
 
     return env_cfg, obs_cfg, reward_cfg, command_cfg
@@ -198,7 +198,7 @@ def main():
     global env
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--exp_name", type=str, default="khr-walking")
+    parser.add_argument("-e", "--exp_name", type=str, default="dbg")
     parser.add_argument("-B", "--num_envs", type=int, default=4096)
     parser.add_argument("-I","--max_iterations", type=int, default=101)
     parser.add_argument("--seed", type=int, default=1)

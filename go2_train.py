@@ -143,13 +143,17 @@ def get_cfgs():
 
     return env_cfg, obs_cfg, reward_cfg, command_cfg
 
+env=[]
 
 def main():
+    global env
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--exp_name", type=str, default="go2-walk")
     parser.add_argument("-B", "--num_envs", type=int, default=4096)
     parser.add_argument("-I","--max_iterations", type=int, default=101)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--quiet", action='store_true')
     args = parser.parse_args()
 
     log_dir = f"logs/{args.exp_name}"
@@ -166,7 +170,7 @@ def main():
     gs.init(backend=gs.gpu, precision="32", logging_level="warning", seed=args.seed, performance_mode=True)
 
     env = Go2Env(
-        num_envs=args.num_envs, env_cfg=env_cfg, obs_cfg=obs_cfg, reward_cfg=reward_cfg, command_cfg=command_cfg
+        num_envs=args.num_envs, env_cfg=env_cfg, obs_cfg=obs_cfg, reward_cfg=reward_cfg, command_cfg=command_cfg, show_viewer=not args.quiet
     )
 
     runner = OnPolicyRunner(env, train_cfg, log_dir, device=gs.device)
