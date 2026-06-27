@@ -24,8 +24,8 @@ def get_cfgs():
        # PD
         #"kp": np.array([25]*12),
         #"kd": np.array([0.5]*12),
-        "kp": 25.0*12,
-        "kd": 0.5*12,
+        "kp": 25.0,
+        "kd": 0.5,
         #"armature": np.array([0.149,0.401,0.434,0.536,0.226,0.070]*2),
         # termination
         "termination_if_roll_greater_than": 15,  # degree
