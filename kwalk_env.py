@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 import torch
 from tensordict import TensorDict
 
@@ -56,7 +56,7 @@ class KwalkEnv:
         )
 
         # add plain
-        self.scene.add_entity(
+        self.ground = self.scene.add_entity(
             gs.morphs.URDF(
                 file="urdf/plane/plane.urdf",
                 fixed=True,
@@ -71,6 +71,10 @@ class KwalkEnv:
                 quat=self.env_cfg["base_init_quat"],
             ),
         )
+
+        global_friction = 0.5
+        self.ground.set_friction(global_friction)
+        self.robot.set_friction(global_friction)
 
         # build
         self.scene.build(n_envs=num_envs)
@@ -141,6 +145,18 @@ class KwalkEnv:
         )
         self.extras = dict()  # extra information for logging
 
+        #歩行周期初期化
+        self.phase = torch.zeros(self.num_envs, device=self.device)
+        self.phase_left = torch.zeros(self.num_envs, device=self.device)
+        self.phase_right = torch.zeros(self.num_envs, device=self.device)
+
+        self.leg_phase = torch.zeros((self.num_envs, 2), device=self.device)
+        self.sin_phase = torch.zeros((self.num_envs, 1), device=self.device)
+        self.cos_phase = torch.zeros((self.num_envs, 1), device=self.device)
+
+        self.feet_height_sharpness = 50
+        self.target_feet_height = self.reward_cfg["feet_height_target"]
+
         # prepare reward functions and multiply reward scales by dt
         self.reward_functions, self.episode_sums = dict(), dict()
         for name in self.reward_scales.keys():
@@ -177,6 +193,30 @@ class KwalkEnv:
         self.projected_gravity = transform_by_quat(self.global_gravity, inv_base_quat)
         self.dof_pos = self.robot.get_dofs_position(self.motors_dof_idx)
         self.dof_vel = self.robot.get_dofs_velocity(self.motors_dof_idx)
+
+        # 報酬関数計算用変数
+        self.contact_forces = self.robot.get_links_net_contact_force()
+        self.left_foot_link = self.robot.get_link(name='l_foot')
+        self.right_foot_link = self.robot.get_link(name='r_foot')
+        self.left_foot_id_local = self.left_foot_link.idx_local
+        self.right_foot_id_local = self.right_foot_link.idx_local
+        self.feet_indices = [self.left_foot_id_local, self.right_foot_id_local]
+        self.feet_indices = [self.left_foot_id_local, self.right_foot_id_local]
+        self.feet_num = len(self.feet_indices)
+        self.links_vel = self.robot.get_links_vel()
+        self.feet_vel = self.links_vel[:, self.feet_indices, :]
+        self.links_pos = self.robot.get_links_pos()
+        self.feet_pos = self.links_pos[:, self.feet_indices, :]
+
+        # 歩行周期信号生成
+        period = 0.8
+        offset = 0.5
+        self.phase = (self.episode_length_buf * self.dt) % period / period
+        self.phase_left = self.phase
+        self.phase_right = (self.phase + offset) % 1
+        self.leg_phase = torch.cat([self.phase_left.unsqueeze(1), self.phase_right.unsqueeze(1)], dim=-1)
+        self.sin_phase = torch.sin(2 * np.pi * self.phase ).unsqueeze(1)
+        self.cos_phase = torch.cos(2 * np.pi * self.phase ).unsqueeze(1)
 
         # compute reward
         self.rew_buf.zero_()
@@ -271,6 +311,10 @@ class KwalkEnv:
                 (self.dof_pos - self.default_dof_pos) * self.obs_scales["dof_pos"],  # 12
                 self.dof_vel * self.obs_scales["dof_vel"],  # 12
                 self.actions,  # 12
+                self.cos_phase, #1
+                self.sin_phase, #1
+                self.last_actions, #12
+                self.last_dof_vel * self.obs_scales["dof_vel"],  # 12
             ),
             dim=-1,
         )
@@ -306,3 +350,76 @@ class KwalkEnv:
     def _reward_base_height(self):
         # Penalize base height away from target
         return torch.square(self.base_pos[:, 2] - self.reward_cfg["base_height_target"])
+    
+    ##### 追加された報酬関数
+    def _reward_alive(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        return 1.0
+    
+    def _reward_gait_contact(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        res = torch.zeros(self.num_envs, dtype=torch.float, device=gs.device)
+        for i in range(self.feet_num):
+            is_stance = self.leg_phase[:, i] < 0.55
+            contact = self.contact_forces[:, self.feet_indices[i], 2] > 1
+            res += ~(contact ^ is_stance)
+        return res
+    
+    def _reward_gait_swing(self):
+        res = torch.zeros(self.num_envs, dtype=torch.float, device=gs.device)
+        for i in range(self.feet_num):
+            is_swing = self.leg_phase[:, i] >= 0.55
+            contact = self.contact_forces[:, self.feet_indices[i], 2] > 1
+            res += ~(contact ^ is_swing)
+        return res
+    
+    def _reward_contact_no_vel(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        contact = torch.norm(self.contact_forces[:, self.feet_indices, :3],
+                             dim=2) > 1.
+        contact_feet_vel = self.feet_vel * contact.unsqueeze(-1)
+        penalize = torch.square(contact_feet_vel[:, :, :3])
+        return torch.sum(penalize, dim=(1, 2))
+    
+    def _reward_feet_clearance(self):       
+        is_swing = self.leg_phase[:, :] >= 0.55
+        error = torch.abs(self.target_feet_height - self.feet_pos[:, :, 2])
+        pos = torch.exp(-self.feet_height_sharpness * error)
+        #pos = torch.exp(-self.feet_height_sharpness * (torch.abs(self.target_feet_height - self.feet_height )))
+        rew = torch.sum(pos * is_swing, dim=1)
+            
+        return rew
+    
+    def _reward_hip_pos(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        #return torch.sum(torch.square(self.dof_pos[:,[1,2,7,8]]), dim=1)
+        return torch.sum(torch.square(self.dof_pos[:,[1,7]]), dim=1)
+    
+    def _reward_orientation(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        penalty = torch.sum(torch.square(self.projected_gravity[:, :2]), dim=1)
+        return penalty
+    
+    def _reward_ang_vel_xy(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        return torch.sum(torch.square(self.base_ang_vel[:, :2]), dim=1)
+    
+    def _reward_joint_torques(self):
+        torques = self.robot.get_dofs_control_force()
+        return torch.sum(torch.square(torques), dim = 1)
+    
+    def _reward_dof_vel(self):
+        # Function borrowed from https://github.com/unitreerobotics/unitree_rl_gym
+        # Under BSD-3 License
+        return torch.sum(torch.square(self.dof_vel), dim=1)
+    
+    def _reward_acceleration(self):
+        return torch.sum(torch.square((self.last_dof_vel - self.dof_vel) / self.dt), dim=1)
+    
+

@@ -43,6 +43,7 @@ class KHREnv:
                 substeps=2,
             ),
             rigid_options=gs.options.RigidOptions(
+                enable_self_collision=True,   # originally  False
                 enable_collision = True,
                 enable_neutral_collision=True,
                 enable_joint_limit = True,
@@ -252,6 +253,7 @@ class KHREnv:
         self.links_pos = self.robot.get_links_pos()
         self.feet_pos = self.links_pos[:, self.feet_indices, :]
 
+        # 歩行周期信号生成
         period = 0.8
         offset = 0.5
         self.phase = (self.episode_length_buf * self.dt) % period / period
@@ -278,7 +280,7 @@ class KHREnv:
         self.reset_buf |= torch.abs(self.base_euler[:, 1]) > self.env_cfg["termination_if_pitch_greater_than"]
         self.reset_buf |= torch.abs(self.base_euler[:, 0]) > self.env_cfg["termination_if_roll_greater_than"]
         self.reset_buf |= self.scene.rigid_solver.get_error_envs_mask()
-        #self.reset_buf |= ankle_dist < self.env_cfg["termination_if_ankle_distance_smaller_than"]
+        self.reset_buf |= ankle_dist < self.env_cfg["termination_if_ankle_distance_smaller_than"]
 
 
         # Compute timeout

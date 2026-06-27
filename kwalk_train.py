@@ -35,7 +35,8 @@ def get_train_cfg(exp_name):
         },
         "actor": {
             "class_name": "MLPModel",
-            "hidden_dims": [512, 256, 128],
+            #"hidden_dims": [512, 256, 128],
+            "hidden_dims": [128, 64, 32],
             "activation": "elu",
             "distribution_cfg": {
                 "class_name": "GaussianDistribution",
@@ -45,7 +46,8 @@ def get_train_cfg(exp_name):
         },
         "critic": {
             "class_name": "MLPModel",
-            "hidden_dims": [512, 256, 128],
+            #"hidden_dims": [512, 256, 128],
+            "hidden_dims": [128, 64, 32],
             "activation": "elu",
         },
         "obs_groups": {
@@ -124,23 +126,42 @@ def get_cfgs():
     reward_cfg = {
         "tracking_sigma": 0.25,
         "base_height_target": 0.254, 
-        "feet_height_target": 0.075,
+        "feet_height_target": 0.035,
         "reward_scales": {
-            "tracking_lin_vel": 1.0,
-            "tracking_ang_vel": 0.2,
+            "tracking_lin_vel": 1.5,
+            "tracking_ang_vel": 1.0,
             "lin_vel_z": -1.0,
             "base_height": -50.0,
             "action_rate": -0.005,
             "similar_to_default": -0.1,
+            #####################3 追加された報酬項
+            "alive" : 0.5,
+            "gait_contact" : 0.18,
+            "gait_swing": -0.05,
+            "contact_no_vel": -0.2,
+            "feet_clearance": 0.2,
+            #"hip_pos": -1.0,
+            "orientation":-5.0,
+            "ang_vel_xy": -0.2,
+            "joint_torques":-0.0005,
+            "dof_vel": -0.001,
+            "acceleration" : -0.0001,
         },
     }
+    '''
     command_cfg = {
         "num_commands": 3,
-        "lin_vel_x_range": [0.5, 0.5],
+        "lin_vel_x_range": [-0.2, 0.2],
+        "lin_vel_y_range": [-0.2, 0.2],
+        "ang_vel_range": [-0.5, 0.5],
+    }
+    '''
+    command_cfg = {
+        "num_commands": 3,
+        "lin_vel_x_range": [0.4, 0.4],
         "lin_vel_y_range": [0, 0],
         "ang_vel_range": [0, 0],
     }
-
     return env_cfg, obs_cfg, reward_cfg, command_cfg
 
 env=[]

@@ -99,8 +99,8 @@ def get_cfgs():
         ],
 
         # PD
-        "kp": 25.0,
-        "kd": 0.5,
+        "kp": 20.0,  # 25
+        "kd": 2.5,   # 0.5,
  
         "armature": 0.01,   # [kgm^2]  default 0.1
         
@@ -109,7 +109,7 @@ def get_cfgs():
         "termination_if_pitch_greater_than": 50,
         "termination_if_ankle_distance_smaller_than":0.085,
         # base pose
-        "base_init_pos": [0.0, 0.0, 0.24],
+        "base_init_pos": [0.0, 0.0, 0.28],
         "base_init_quat": [1.0, 0.0, 0.0, 0.0],
         "episode_length_s": 20.0,
         "resampling_time_s": 4.0,
@@ -160,27 +160,24 @@ def get_cfgs():
         "feet_height_target": 0.035,
         "reward_scales": {
             "tracking_lin_vel": 1.5,
-            "tracking_ang_vel": 1.0,
-            
-            "orientation":-5.0,
+            "tracking_ang_vel": 1.0,          
             "lin_vel_z": -0.1,
-            "ang_vel_xy": -0.2,
+            "action_rate": -0.05, #-0.05
+            "similar_to_default": -0.1,
             "base_height": -10.0,
+            #####################3 追加された報酬項
+            "alive" : 0.5,
             "gait_contact" : 0.18,
             "gait_swing": -0.05,
             "contact_no_vel": -0.2,
-            #"feet_swing_height": -30.0,
             "feet_clearance": 0.2,
-            #feet_distance" : 0.2,
-            "hip_pos": -1.0,
-            "alive" : 0.5,
-
-            "action_rate": -0.05, #-0.05
-            #action_smoothness": -0.001,
-            "similar_to_default": -0.1,
-            "dof_vel": -0.001,
-            "acceleration" : -0.0001,
+            #"hip_pos": -1.0,          #　股関節の回転角に対するペナルティ
+            "orientation":-5.0,
+            "ang_vel_xy": -0.2,
             "joint_torques":-0.0005,
+            "dof_vel": -0.001,
+            #"acceleration" : -0.0001,     # この報酬講を入れると学習が進まない
+            "acceleration" : -0.00001,
         },
     }
     command_cfg = {
