@@ -14,12 +14,12 @@ from rsl_rl.runners import OnPolicyRunner
 
 import genesis as gs
 
-from gwalk_env import GwalkEnv
+from kwalk_env import KwalkEnv
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--exp_name", type=str, default="gwalk")
+    parser.add_argument("-e", "--exp_name", type=str, default="kwalk")
     parser.add_argument("-I", "--ckpt", type=int, default=100)
     args = parser.parse_args()
 
@@ -30,7 +30,7 @@ def main():
         env_cfg, obs_cfg, reward_cfg, command_cfg, train_cfg = pickle.load(f)
     reward_cfg["reward_scales"] = {}
 
-    env = GwalkEnv(
+    env = KwalkEnv(
         num_envs=1,
         env_cfg=env_cfg,
         obs_cfg=obs_cfg,

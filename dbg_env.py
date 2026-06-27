@@ -43,9 +43,10 @@ class KHREnv:
                 substeps=2,
             ),
             rigid_options=gs.options.RigidOptions(
-                enable_collision = True,
-                enable_neutral_collision=True,
-                enable_joint_limit = True,
+                enable_self_collision=True,
+                #enable_collision = True,
+                #enable_neutral_collision=True,
+                #enable_joint_limit = True,
                 tolerance=1e-5,
                 # For this locomotion policy, there are usually no more than 20 collision pairs. Setting a low value
                 # can save memory. Violating this condition will raise an exception.
