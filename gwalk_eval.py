@@ -14,7 +14,7 @@ from rsl_rl.runners import OnPolicyRunner
 
 import genesis as gs
 
-from go2_env import Go2Env
+from gwalk_env import GwalkEnv
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
         env_cfg, obs_cfg, reward_cfg, command_cfg, train_cfg = pickle.load(f)
     reward_cfg["reward_scales"] = {}
 
-    env = Go2Env(
+    env = GwalkEnv(
         num_envs=1,
         env_cfg=env_cfg,
         obs_cfg=obs_cfg,

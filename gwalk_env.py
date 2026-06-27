@@ -12,7 +12,7 @@ def gs_rand(lower, upper, batch_shape):
     return (upper - lower) * torch.rand(size=(*batch_shape, *lower.shape), dtype=gs.tc_float, device=gs.device) + lower
 
 
-class Go2Env:
+class GwalkEnv:
     def __init__(self, num_envs, env_cfg, obs_cfg, reward_cfg, command_cfg, show_viewer=True):
         self.num_envs: int = num_envs
         self.num_actions = env_cfg["num_actions"]

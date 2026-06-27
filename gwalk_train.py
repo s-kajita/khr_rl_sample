@@ -13,7 +13,7 @@ from rsl_rl.runners import OnPolicyRunner
 
 import genesis as gs
 
-from go2_env import Go2Env
+from gwalk_env import GwalkEnv
 
 
 def get_train_cfg(exp_name):
@@ -123,7 +123,7 @@ def get_cfgs():
     }
     reward_cfg = {
         "tracking_sigma": 0.25,
-        "base_height_target": 0.254,  # for go2 0.3
+        "base_height_target": 0.254, 
         "feet_height_target": 0.075,
         "reward_scales": {
             "tracking_lin_vel": 1.0,
@@ -149,7 +149,7 @@ def main():
     global env
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--exp_name", type=str, default="go2-walk")
+    parser.add_argument("-e", "--exp_name", type=str, default="gwalk")
     parser.add_argument("-B", "--num_envs", type=int, default=4096)
     parser.add_argument("-I","--max_iterations", type=int, default=101)
     parser.add_argument("--seed", type=int, default=1)
@@ -169,7 +169,7 @@ def main():
 
     gs.init(backend=gs.gpu, precision="32", logging_level="warning", seed=args.seed, performance_mode=True)
 
-    env = Go2Env(
+    env = GwalkEnv(
         num_envs=args.num_envs, env_cfg=env_cfg, obs_cfg=obs_cfg, reward_cfg=reward_cfg, command_cfg=command_cfg, show_viewer=not args.quiet
     )
 
