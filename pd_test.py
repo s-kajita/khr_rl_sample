@@ -24,8 +24,8 @@ def get_cfgs():
        # PD
         #"kp": np.array([25]*12),
         #"kd": np.array([0.5]*12),
-        "kp": 25.0,
-        "kd": 0.5,
+        "kp": 25.0*12,
+        "kd": 0.5*12,
         #"armature": np.array([0.149,0.401,0.434,0.536,0.226,0.070]*2),
         # termination
         "termination_if_roll_greater_than": 15,  # degree
@@ -145,15 +145,22 @@ print("r_foot: ",robot.get_link('r_foot').get_pos())
 print("base_link: ",robot.get_link('base_link').get_pos())
 print("robot.get_pos():",robot.get_pos())
 
+plt_idx = [2,3,4]
+plt_names = [jnt_names[n] for n in plt_idx]
+dofs_data = np.array(dofs_log)
+torq_data = np.array(dofs_force_log)
+
 #================ show graph =======================
 plt.figure()
 plt.subplot(211)
-plt.plot(simT,np.rad2deg(dofs_log))
+plt.plot(simT,np.rad2deg(dofs_data[:,plt_idx]))
 plt.ylabel('[deg]')
 plt.title(os.path.basename(__file__))
+plt.legend(plt_names)
 
 plt.subplot(212)
-plt.plot(simT,dofs_force_log)
+plt.plot(simT,torq_data[:,plt_idx])
+plt.legend(plt_names)
 plt.ylabel('[Nm]')
 plt.xlabel('time [s]')
 
