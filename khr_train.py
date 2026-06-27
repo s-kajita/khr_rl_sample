@@ -159,13 +159,12 @@ def get_cfgs():
         "base_height_target": 0.2395,   # 0.254
         "feet_height_target": 0.035,
         "reward_scales": {
-            "tracking_lin_vel": 1.5,
             "tracking_ang_vel": 1.0,          
             "lin_vel_z": -0.1,
             "action_rate": -0.05, #-0.05
             "similar_to_default": -0.1,
             "base_height": -10.0,
-            #####################3 追加された報酬項
+            ##################### 追加された報酬項
             "alive" : 0.5,
             "gait_contact" : 0.18,
             "gait_swing": -0.05,
@@ -176,8 +175,8 @@ def get_cfgs():
             "ang_vel_xy": -0.2,
             "joint_torques":-0.0005,
             "dof_vel": -0.001,
-            #"acceleration" : -0.0001,     # この報酬講を入れると学習が進まない
-            "acceleration" : -0.00001,
+            #"acceleration" : -0.0001,   # この報酬項を入れると学習が進まない
+            "acceleration" : -0.00001,   # この値なら学習OK
         },
     }
     command_cfg = {
