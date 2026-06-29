@@ -13,7 +13,7 @@ from rsl_rl.runners import OnPolicyRunner
 
 import genesis as gs
 
-from khr_env import KHREnv
+from khrbase_env import KHREnv
 
 
 def get_train_cfg(exp_name):
@@ -70,16 +70,16 @@ def get_cfgs():
         "default_joint_angles": {  # [rad]
             "l_hip_yaw": 0.0,
             "l_hip_roll": 0.0,
-            "l_hip_pitch": -0.5,    # -0.2
-            "l_knee_pitch": 1.0,    # 0.4
-            "l_ankle_pitch": -0.5,  # -0.2
+            "l_hip_pitch": -0.2,
+            "l_knee_pitch": 0.4,
+            "l_ankle_pitch": -0.2,
             "l_ankle_roll": 0.0,
 
             "r_hip_yaw": 0.0,
             "r_hip_roll": 0.0,
-            "r_hip_pitch": -0.5,   # -0.2
-            "r_knee_pitch": 1.0,   # 0.4
-            "r_ankle_pitch": -0.5, # -0.2
+            "r_hip_pitch": -0.2,
+            "r_knee_pitch": 0.4,
+            "r_ankle_pitch": -0.2,
             "r_ankle_roll": 0.0,
         },
         "joint_names": [
@@ -99,11 +99,8 @@ def get_cfgs():
         ],
 
         # PD
-        "kp": 20.0*12,  # 25
-        "kd": 0.5*12,   # 0.5, 2.5
- 
-        "armature": 0.01,   # [kgm^2]  default 0.1
-        
+        "kp": 25.0,
+        "kd": 0.5,
         # termination
         "termination_if_roll_greater_than": 50,  # degree
         "termination_if_pitch_greater_than": 50,
@@ -156,28 +153,31 @@ def get_cfgs():
     }
     reward_cfg = {
         "tracking_sigma": 0.25,
-        "base_height_target": 0.2395,   # 0.254
-        "feet_height_target": 0.035,
+        "base_height_target": 0.254,
+        "feet_height_target": 0.03,
         "reward_scales": {
             "tracking_lin_vel": 1.5,
-            "tracking_ang_vel": 1.0,          
+            "tracking_ang_vel": 1.0,
+            
+            "orientation":-5.0,
             "lin_vel_z": -0.1,
-            "action_rate": -0.05, #-0.05
-            "similar_to_default": -0.1,
+            "ang_vel_xy": -0.2,
             "base_height": -10.0,
-            ##################### 追加された報酬項
-            "alive" : 0.5,
             "gait_contact" : 0.18,
             "gait_swing": -0.05,
             "contact_no_vel": -0.2,
+            #"feet_swing_height": -30.0,
             "feet_clearance": 0.2,
-            #"hip_pos": -1.0,          #　股関節の回転角に対するペナルティ
-            "orientation":-5.0,
-            "ang_vel_xy": -0.2,
-            "joint_torques":-0.0005,
+            #feet_distance" : 0.2,
+            "hip_pos": -1.0,
+            "alive" : 0.5,
+
+            "action_rate": -0.05, #-0.05
+            #action_smoothness": -0.001,
+            "similar_to_default": -0.1,
             "dof_vel": -0.001,
-            #"acceleration" : -0.0001,   # この報酬項を入れると学習が進まない
-            "acceleration" : -0.00001,   # この値なら学習OK
+            "acceleration" : -0.0001,
+            "joint_torques":-0.0005,
         },
     }
     command_cfg = {
@@ -189,13 +189,10 @@ def get_cfgs():
 
     return env_cfg, obs_cfg, reward_cfg, command_cfg
 
-env=[]
 
 def main():
-    global env
-    
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--exp_name", type=str, default="khr-walking")
+    parser.add_argument("-e", "--exp_name", type=str, default="khrbase")
     parser.add_argument("-B", "--num_envs", type=int, default=4096)
     parser.add_argument("-I","--max_iterations", type=int, default=101)
     parser.add_argument("--seed", type=int, default=1)
@@ -229,3 +226,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+# training
+python examples/locomotion/go2_train.py
+"""
