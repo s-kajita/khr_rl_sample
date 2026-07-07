@@ -208,4 +208,5 @@ __marimo__/
 
 # rsl-rl logs
 logs/
+data/
 *.mp4

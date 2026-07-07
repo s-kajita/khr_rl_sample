@@ -99,8 +99,8 @@ def get_cfgs():
         ],
 
         # PD
-        "kp": 20.0*12,  # 25
-        "kd": 0.5*12,   # 0.5, 2.5
+        "kp": 20.0*12,  # 20.0*12,  # 25
+        "kd": 0.5*12,  # 0.5*12,   # 0.5, 2.5
  
         "armature": 0.01,   # [kgm^2]  default 0.1
         
@@ -119,7 +119,7 @@ def get_cfgs():
     
         #domain randomization
         'randomize_friction': True,
-        'friction_range': [0.1, 1.5],
+        'friction_range': [0.3, 1.5],
         'randomize_base_mass': True,
         'mass_range': [-0.1,0.5],
         'randomize_com': True,
@@ -176,8 +176,8 @@ def get_cfgs():
             "ang_vel_xy": -0.2,
             "joint_torques":-0.0005,
             "dof_vel": -0.001,
-            #"acceleration" : -0.0001,   # この報酬項を入れると学習が進まない
-            "acceleration" : -0.00001,   # この値なら学習OK
+            "acceleration" : -0.0001,   # この報酬項を入れると学習が進まない
+            #"acceleration" : -0.00001,   # この値なら学習OK
         },
     }
     command_cfg = {

@@ -70,16 +70,16 @@ def get_cfgs():
         "default_joint_angles": {  # [rad]
             "l_hip_yaw": 0.0,
             "l_hip_roll": 0.0,
-            "l_hip_pitch": -0.2,
-            "l_knee_pitch": 0.4,
-            "l_ankle_pitch": -0.2,
+            "l_hip_pitch": -0.5,  #-0.2,
+            "l_knee_pitch": 1.0,  # 0.4,
+            "l_ankle_pitch": -0.5, #-0.2,
             "l_ankle_roll": 0.0,
 
             "r_hip_yaw": 0.0,
             "r_hip_roll": 0.0,
-            "r_hip_pitch": -0.2,
-            "r_knee_pitch": 0.4,
-            "r_ankle_pitch": -0.2,
+            "r_hip_pitch": -0.5,  #-0.2,
+            "r_knee_pitch": 1.0,  #0.4,
+            "r_ankle_pitch": -0.5, #-0.2,
             "r_ankle_roll": 0.0,
         },
         "joint_names": [
@@ -116,7 +116,7 @@ def get_cfgs():
     
         #domain randomization
         'randomize_friction': True,
-        'friction_range': [0.1, 1.5],
+        'friction_range': [0.3, 1.0],
         'randomize_base_mass': True,
         'mass_range': [-0.1,0.5],
         'randomize_com': True,
