@@ -98,7 +98,7 @@ def get_cfgs():
             "r_ankle_roll",
         ],
         # PD
-        "kp": 25.0,
+        "kp": 20.0,
         "kd": 0.5,
 
         "armature": 0.01,   # [kgm^2]  default 0.1
@@ -145,7 +145,7 @@ def get_cfgs():
             "ang_vel_xy": -0.2,
             "joint_torques":-0.0005,
             "dof_vel": -0.001,
-            "acceleration" : -0.0001,
+            "acceleration" : -0.00001,
         },
     }
     '''
